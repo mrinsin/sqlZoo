@@ -6,7 +6,6 @@ FROM world
 WHERE population >= 200000000
 
 -- Give the name and the per capita GDP for those countries with a population of at least 200 million
-
 SELECT name, gdp/population
 FROM world
 WHERE population >= 200000000
@@ -15,18 +14,15 @@ SELECT name, population/1000000
 FROM world
 WHERE continent = 'South America'
 
-
 SELECT name, population
 FROM world
 WHERE name IN ('France', 'Germany', 'Italy')
-
 
 SELECT name
 FROM world
 WHERE name LIKE ('%United%')
 
 --Show the countries that are big by area or big by population. Show name, population and area
-
 SELECT name, population, area
 FROM world
 WHERE area > 3000000 OR population > 250000000
@@ -51,12 +47,10 @@ SELECT name, capital
 FROM world
 WHERE LENGTH(name) = LENGTH(capital)
 
-
 --Show the name and the capital where the first letters of each match. Don't include countries where the name and the capital are the same word.
 SELECT name, capital
 FROM world
 WHERE LEFT(name, 1) = LEFT(capital, 1) AND name <> capital
-
 
 SELECT yr, subject, winner
 FROM nobel
@@ -69,12 +63,10 @@ SELECT player, teamid, stadium, mdate
   FROM game JOIN goal ON (id=matchid)
 WHERE teamid = 'GER'
 
-
 --Show the team1, team2 and player for every goal scored by a player called Mario player LIKE 'Mario%'
 SELECT team1, team2, player
 FROM game JOIN goal ON (id = matchid)
 WHERE player LIKE '%Mario%'
-
 
 -- FROM the goal and eteam tables, Show player, teamid, coach, gtime for all goals scored in the first 10 minutes gtime<=10
 SELECT player, teamid, coach, gtime
@@ -85,3 +77,31 @@ SELECT player, teamid, coach, gtime
  SELECT mdate, teamname
 FROM game JOIN eteam ON (team1 = eteam.id)
 WHERE eteam.coach = 'Fernando Santos'
+
+--List the player for every goal scored in a game where the stadium was 'National Stadium, Warsaw'
+SELECT player
+FROM goal JOIN game ON (goal.matchid = game.id)
+WHERE stadium = 'National Stadium, Warsaw'
+
+--The example query shows all goals scored in the Germany-Greece quarterfinal.Instead show the name of all players who scored a goal against Germany.
+SELECT DISTINCT player
+  FROM game JOIN goal ON matchid = id
+    WHERE (game.team1='GER' OR game.team2='GER') AND
+goal.teamid <> 'GER'
+
+--Show teamname and the total number of goals scored.
+SELECT teamname, COUNT(goal.teamid) as GoalsScored
+  FROM eteam JOIN goal ON id=teamid
+ GROUP BY teamname
+
+ --Show the stadium and the number of goals scored in each stadium.
+ SELECT stadium, COUNT(stadium) as StadiumGoals
+ FROM game JOIN goal ON (id = matchid)
+ GROUP BY stadium
+
+--For every match involving 'POL', show the matchid, date and the number of goals scored.
+SELECT matchid, mdate, COUNT(*) as GoalsScored
+  FROM game JOIN goal ON matchid = id
+ WHERE (team1 = 'POL' OR team2 = 'POL')
+GROUP BY matchid, mdate
+ORDER BY id
